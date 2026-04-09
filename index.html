@@ -339,32 +339,32 @@
       </div>
 
       <div class="image-grid">
-        <button class="choice-card" data-correct="false" type="button">
+        <button class="choice-card" data-correct="false" data-special="false" type="button">
           <img src="Marq.png" alt="Marq" />
           <div class="choice-name">Marq</div>
         </button>
 
-        <button class="choice-card" data-correct="false" type="button">
+        <button class="choice-card" data-correct="false" data-special="false" type="button">
           <img src="Santtu.png" alt="Santtu" />
           <div class="choice-name">Santtu</div>
         </button>
 
-        <button class="choice-card" data-correct="false" type="button">
+        <button class="choice-card" data-correct="false" data-special="false" type="button">
           <img src="Niko.png" alt="Niko" />
           <div class="choice-name">Niko</div>
         </button>
 
-        <button class="choice-card" data-correct="false" type="button">
+        <button class="choice-card" data-correct="false" data-special="true" type="button">
           <img src="Jessetys.png" alt="Jessetys" />
           <div class="choice-name">Jessetys</div>
         </button>
 
-        <button class="choice-card" data-correct="true" type="button">
+        <button class="choice-card" data-correct="true" data-special="false" type="button">
           <img src="Helmi.png" alt="Helmi" />
           <div class="choice-name">Helmi</div>
         </button>
 
-        <button class="choice-card" data-correct="false" type="button">
+        <button class="choice-card" data-correct="false" data-special="false" type="button">
           <img src="Ella.png" alt="Ella" />
           <div class="choice-name">Ella</div>
         </button>
@@ -372,7 +372,7 @@
     </section>
 
     <section id="challenge4WrongSection" class="screen hidden">
-      <div class="stage-text error-message">Valitettavasti ei osunut oikeaan... 😥</div>
+      <div id="challenge4WrongText" class="stage-text error-message">Valitettavasti ei osunut oikeaan... 😥</div>
       <div class="btn-row">
         <button class="secondary-btn" id="retryChallenge4Btn">yritä uudelleen</button>
       </div>
@@ -380,6 +380,36 @@
 
     <section id="challenge4CorrectSection" class="screen hidden">
       <div class="plain-text">Lakiteknisistä syistä tämä oli valitettavasti oikea vastaus...</div>
+      <button class="primary-btn" id="challenge4NextBtn">jatka</button>
+    </section>
+
+    <section id="challenge5Section" class="screen hidden">
+      <div class="stage-text">Tsekkaa uusimman videon uusin kommentti 😏</div>
+      <input
+        id="challenge5Input"
+        class="name-input"
+        type="text"
+        placeholder="Kirjoita vastaus tähän"
+        autocomplete="off"
+      />
+      <div class="btn-row">
+        <button class="primary-btn" id="challenge5SubmitBtn">koita onneani</button>
+      </div>
+    </section>
+
+    <section id="challenge5AlmostSection" class="screen hidden">
+      <div class="plain-text">Hups! Unohdin mainita ettei musavideoita lasketa 😅</div>
+    </section>
+
+    <section id="challenge5CorrectSection" class="screen hidden">
+      <div class="plain-text">Wau! Se on oikea vastaus! Oletko valmis siirtymään eteenpäin?? 😄</div>
+    </section>
+
+    <section id="challenge5WrongSection" class="screen hidden">
+      <div class="stage-text error-message">O ou, taisi mennä väärin!</div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="retryChallenge5Btn">yritä uudelleen</button>
+      </div>
     </section>
   </main>
 
@@ -439,6 +469,10 @@
     const challenge4Section = document.getElementById('challenge4Section');
     const challenge4WrongSection = document.getElementById('challenge4WrongSection');
     const challenge4CorrectSection = document.getElementById('challenge4CorrectSection');
+    const challenge5Section = document.getElementById('challenge5Section');
+    const challenge5AlmostSection = document.getElementById('challenge5AlmostSection');
+    const challenge5CorrectSection = document.getElementById('challenge5CorrectSection');
+    const challenge5WrongSection = document.getElementById('challenge5WrongSection');
 
     const stageText = document.getElementById('stageText');
     const continueBtn = document.getElementById('continueBtn');
@@ -453,8 +487,14 @@
     const retryIqBtn = document.getElementById('retryIqBtn');
 
     const challenge3NextBtn = document.getElementById('challenge3NextBtn');
+    const challenge4NextBtn = document.getElementById('challenge4NextBtn');
     const retryChallenge4Btn = document.getElementById('retryChallenge4Btn');
+    const challenge4WrongText = document.getElementById('challenge4WrongText');
     const challenge4Choices = document.querySelectorAll('.choice-card');
+
+    const challenge5Input = document.getElementById('challenge5Input');
+    const challenge5SubmitBtn = document.getElementById('challenge5SubmitBtn');
+    const retryChallenge5Btn = document.getElementById('retryChallenge5Btn');
 
     let continueClicks = 0;
 
@@ -468,12 +508,17 @@
       challenge4Section.classList.add('hidden');
       challenge4WrongSection.classList.add('hidden');
       challenge4CorrectSection.classList.add('hidden');
+      challenge5Section.classList.add('hidden');
+      challenge5AlmostSection.classList.add('hidden');
+      challenge5CorrectSection.classList.add('hidden');
+      challenge5WrongSection.classList.add('hidden');
     }
 
     function resetTexts() {
       stageText.textContent = '';
       redText.textContent = '';
       resultText.textContent = '';
+      challenge4WrongText.textContent = 'Valitettavasti ei osunut oikeaan... 😥';
     }
 
     function showNameScreen() {
@@ -524,9 +569,10 @@
       challenge4Section.classList.remove('hidden');
     }
 
-    function showChallenge4WrongScreen() {
+    function showChallenge4WrongScreen(message) {
       hideAllSections();
       resetTexts();
+      challenge4WrongText.textContent = message;
       challenge4WrongSection.classList.remove('hidden');
     }
 
@@ -534,6 +580,32 @@
       hideAllSections();
       resetTexts();
       challenge4CorrectSection.classList.remove('hidden');
+    }
+
+    function showChallenge5Screen() {
+      hideAllSections();
+      resetTexts();
+      challenge5Input.value = '';
+      challenge5Section.classList.remove('hidden');
+      challenge5Input.focus();
+    }
+
+    function showChallenge5AlmostScreen() {
+      hideAllSections();
+      resetTexts();
+      challenge5AlmostSection.classList.remove('hidden');
+    }
+
+    function showChallenge5CorrectScreen() {
+      hideAllSections();
+      resetTexts();
+      challenge5CorrectSection.classList.remove('hidden');
+    }
+
+    function showChallenge5WrongScreen() {
+      hideAllSections();
+      resetTexts();
+      challenge5WrongSection.classList.remove('hidden');
     }
 
     saveNameBtn.addEventListener('click', () => {
@@ -609,6 +681,10 @@
       showChallenge4Screen();
     });
 
+    challenge4NextBtn.addEventListener('click', () => {
+      showChallenge5Screen();
+    });
+
     retryChallenge4Btn.addEventListener('click', () => {
       showChallenge4Screen();
     });
@@ -616,13 +692,43 @@
     challenge4Choices.forEach((choice) => {
       choice.addEventListener('click', () => {
         const isCorrect = choice.dataset.correct === 'true';
+        const isSpecial = choice.dataset.special === 'true';
 
         if (isCorrect) {
           showChallenge4CorrectScreen();
+        } else if (isSpecial) {
+          showChallenge4WrongScreen('Lähellä oli, mutta silti ei osunut oikeaan! 😥');
         } else {
-          showChallenge4WrongScreen();
+          showChallenge4WrongScreen('Valitettavasti ei osunut oikeaan... 😥');
         }
       });
+    });
+
+    challenge5SubmitBtn.addEventListener('click', () => {
+      const answer = challenge5Input.value.trim();
+
+      if (!answer) {
+        challenge5Input.focus();
+        return;
+      }
+
+      if (answer === '86') {
+        showChallenge5AlmostScreen();
+      } else if (answer === '83') {
+        showChallenge5CorrectScreen();
+      } else {
+        showChallenge5WrongScreen();
+      }
+    });
+
+    challenge5Input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        challenge5SubmitBtn.click();
+      }
+    });
+
+    retryChallenge5Btn.addEventListener('click', () => {
+      showChallenge5Screen();
     });
 
     showNameScreen();
