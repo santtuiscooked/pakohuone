@@ -188,6 +188,23 @@
       color: #d60000;
     }
 
+    .countdown-text {
+      margin: 0;
+      font-size: clamp(2rem, 8vw, 4.8rem);
+      font-weight: 900;
+      color: #111;
+      line-height: 1;
+    }
+
+    .final-code {
+      margin: 0;
+      font-size: clamp(3rem, 12vw, 7rem);
+      font-weight: 900;
+      color: #111;
+      letter-spacing: 6px;
+      line-height: 1;
+    }
+
     .image-grid {
       width: 100%;
       display: grid;
@@ -434,7 +451,7 @@
     </section>
 
     <section id="challenge6Section" class="screen hidden">
-      <div class="stage-text">Tehdäänkö spaghetti polognesea? 🤤 Mikä esine ei kuulunut ruoan sekaan? 🤨</div>
+      <div class="stage-text">Tehdäänkö spaghetti bolognesea? 🤤 Mikä esine ei kuulunut ruoan sekaan? 🤨</div>
       <input
         id="challenge6Input"
         class="name-input"
@@ -443,7 +460,7 @@
         autocomplete="off"
       />
       <div class="btn-row">
-        <button class="primary-btn" id="challenge6SubmitBtn">jatkaa</button>
+        <button class="primary-btn" id="challenge6SubmitBtn">jatka</button>
       </div>
     </section>
 
@@ -456,6 +473,75 @@
 
     <section id="challenge6CorrectSection" class="screen hidden">
       <div class="plain-text">Mahtavaa! Et tarvitse avainta mihinkään! Tsekkaa pöydän alle!</div>
+      <div class="btn-row">
+        <button class="primary-btn" id="challenge6NextBtn">jatka</button>
+      </div>
+    </section>
+
+    <section id="challenge7Section" class="screen hidden">
+      <div class="stage-text">Tsekkaa pöydän alle!</div>
+      <input
+        id="challenge7Input"
+        class="name-input"
+        type="text"
+        placeholder="kirjoita salasana tähän"
+        autocomplete="off"
+      />
+      <div class="btn-row">
+        <button class="primary-btn" id="challenge7SubmitBtn">jatka</button>
+      </div>
+    </section>
+
+    <section id="challenge7WrongSection" class="screen hidden">
+      <div class="stage-text error-message">yritä uudestaan!</div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="retryChallenge7Btn">yritä uudestaan</button>
+      </div>
+    </section>
+
+    <section id="challenge7CorrectSection" class="screen hidden">
+      <div class="plain-text">Mahtavaa, mielestäni olet ansainnut viimeisen kassakaapin koodin! 😊</div>
+      <div class="btn-row">
+        <button class="primary-btn" id="challenge7NextBtn">jatka</button>
+      </div>
+    </section>
+
+    <section id="agreementSection" class="screen hidden">
+      <div class="stage-text">Oletko samaa mieltä?</div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="agreementNoBtn">en</button>
+        <button class="primary-btn" id="agreementYesBtn">kyllä</button>
+      </div>
+    </section>
+
+    <section id="agreementNoSection" class="screen hidden">
+      <div class="plain-text">Mahtavaa, et välttämättä ansaitsekaan! ❤️ Mutta tässä se silti on...</div>
+      <div class="btn-row">
+        <button class="primary-btn" id="agreementNoNextBtn">jatka</button>
+      </div>
+    </section>
+
+    <section id="agreementYesCountdownSection" class="screen hidden">
+      <div class="plain-text">Muista että ei saa olla ylimielinen! Aloitetaan testi alusta...</div>
+      <div id="countdownNumber" class="countdown-text">7</div>
+    </section>
+
+    <section id="prankSection" class="screen hidden">
+      <div class="plain-text">PRÄNK! 🤣</div>
+      <div class="btn-row">
+        <button class="primary-btn" id="prankNextBtn">jatka</button>
+      </div>
+    </section>
+
+    <section id="earnedCodeSection" class="screen hidden">
+      <div class="plain-text">Olet ansainnut koodin kyllä ❤️</div>
+      <div class="btn-row">
+        <button class="primary-btn" id="earnedCodeNextBtn">jatka</button>
+      </div>
+    </section>
+
+    <section id="finalCodeSection" class="screen hidden">
+      <div class="final-code">679</div>
     </section>
   </main>
 
@@ -524,6 +610,15 @@
     const challenge6Section = document.getElementById('challenge6Section');
     const challenge6WrongSection = document.getElementById('challenge6WrongSection');
     const challenge6CorrectSection = document.getElementById('challenge6CorrectSection');
+    const challenge7Section = document.getElementById('challenge7Section');
+    const challenge7WrongSection = document.getElementById('challenge7WrongSection');
+    const challenge7CorrectSection = document.getElementById('challenge7CorrectSection');
+    const agreementSection = document.getElementById('agreementSection');
+    const agreementNoSection = document.getElementById('agreementNoSection');
+    const agreementYesCountdownSection = document.getElementById('agreementYesCountdownSection');
+    const prankSection = document.getElementById('prankSection');
+    const earnedCodeSection = document.getElementById('earnedCodeSection');
+    const finalCodeSection = document.getElementById('finalCodeSection');
 
     const stageText = document.getElementById('stageText');
     const continueBtn = document.getElementById('continueBtn');
@@ -557,13 +652,36 @@
     const challenge6SubmitBtn = document.getElementById('challenge6SubmitBtn');
     const challenge6WrongText = document.getElementById('challenge6WrongText');
     const retryChallenge6Btn = document.getElementById('retryChallenge6Btn');
+    const challenge6NextBtn = document.getElementById('challenge6NextBtn');
+
+    const challenge7Input = document.getElementById('challenge7Input');
+    const challenge7SubmitBtn = document.getElementById('challenge7SubmitBtn');
+    const retryChallenge7Btn = document.getElementById('retryChallenge7Btn');
+    const challenge7NextBtn = document.getElementById('challenge7NextBtn');
+
+    const agreementNoBtn = document.getElementById('agreementNoBtn');
+    const agreementYesBtn = document.getElementById('agreementYesBtn');
+    const agreementNoNextBtn = document.getElementById('agreementNoNextBtn');
+
+    const countdownNumber = document.getElementById('countdownNumber');
+    const prankNextBtn = document.getElementById('prankNextBtn');
+    const earnedCodeNextBtn = document.getElementById('earnedCodeNextBtn');
 
     let continueClicks = 0;
     let usedNoPath = false;
     let completedHundredClickChallenge = false;
     let extraContinueClicks = 0;
+    let countdownInterval = null;
+
+    function stopCountdown() {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+    }
 
     function hideAllSections() {
+      stopCountdown();
       nameSection.classList.add('hidden');
       continueSection.classList.add('hidden');
       resultSection.classList.add('hidden');
@@ -582,6 +700,15 @@
       challenge6Section.classList.add('hidden');
       challenge6WrongSection.classList.add('hidden');
       challenge6CorrectSection.classList.add('hidden');
+      challenge7Section.classList.add('hidden');
+      challenge7WrongSection.classList.add('hidden');
+      challenge7CorrectSection.classList.add('hidden');
+      agreementSection.classList.add('hidden');
+      agreementNoSection.classList.add('hidden');
+      agreementYesCountdownSection.classList.add('hidden');
+      prankSection.classList.add('hidden');
+      earnedCodeSection.classList.add('hidden');
+      finalCodeSection.classList.add('hidden');
     }
 
     function resetTexts() {
@@ -591,6 +718,7 @@
       challenge4WrongText.textContent = 'Valitettavasti ei osunut oikeaan... 😥';
       extraRedText.textContent = '';
       challenge6WrongText.textContent = '';
+      countdownNumber.textContent = '7';
     }
 
     function showNameScreen() {
@@ -712,6 +840,75 @@
       hideAllSections();
       resetTexts();
       challenge6CorrectSection.classList.remove('hidden');
+    }
+
+    function showChallenge7Screen() {
+      hideAllSections();
+      resetTexts();
+      challenge7Input.value = '';
+      challenge7Section.classList.remove('hidden');
+      challenge7Input.focus();
+    }
+
+    function showChallenge7WrongScreen() {
+      hideAllSections();
+      resetTexts();
+      challenge7WrongSection.classList.remove('hidden');
+    }
+
+    function showChallenge7CorrectScreen() {
+      hideAllSections();
+      resetTexts();
+      challenge7CorrectSection.classList.remove('hidden');
+    }
+
+    function showAgreementScreen() {
+      hideAllSections();
+      resetTexts();
+      agreementSection.classList.remove('hidden');
+    }
+
+    function showAgreementNoScreen() {
+      hideAllSections();
+      resetTexts();
+      agreementNoSection.classList.remove('hidden');
+    }
+
+    function showAgreementYesCountdownScreen() {
+      hideAllSections();
+      resetTexts();
+      agreementYesCountdownSection.classList.remove('hidden');
+
+      let secondsLeft = 7;
+      countdownNumber.textContent = String(secondsLeft);
+
+      countdownInterval = setInterval(() => {
+        secondsLeft -= 1;
+        countdownNumber.textContent = String(secondsLeft);
+
+        if (secondsLeft <= 0) {
+          stopCountdown();
+          showPrankScreen();
+        }
+      }, 1000);
+    }
+
+    function showPrankScreen() {
+      hideAllSections();
+      resetTexts();
+      prankSection.classList.remove('hidden');
+    }
+
+    function showEarnedCodeScreen() {
+      hideAllSections();
+      resetTexts();
+      earnedCodeSection.classList.remove('hidden');
+    }
+
+    function showFinalCodeScreen() {
+      hideAllSections();
+      resetTexts();
+      finalCodeSection.classList.remove('hidden');
     }
 
     function goToChallenge6OrExtra() {
@@ -905,6 +1102,59 @@
 
     retryChallenge6Btn.addEventListener('click', () => {
       showChallenge6Screen();
+    });
+
+    challenge6NextBtn.addEventListener('click', () => {
+      showChallenge7Screen();
+    });
+
+    challenge7SubmitBtn.addEventListener('click', () => {
+      const answer = challenge7Input.value.trim();
+
+      if (!answer) {
+        challenge7Input.focus();
+        return;
+      }
+
+      if (answer === '6294817452') {
+        showChallenge7CorrectScreen();
+      } else {
+        showChallenge7WrongScreen();
+      }
+    });
+
+    challenge7Input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        challenge7SubmitBtn.click();
+      }
+    });
+
+    retryChallenge7Btn.addEventListener('click', () => {
+      showChallenge7Screen();
+    });
+
+    challenge7NextBtn.addEventListener('click', () => {
+      showAgreementScreen();
+    });
+
+    agreementNoBtn.addEventListener('click', () => {
+      showAgreementNoScreen();
+    });
+
+    agreementYesBtn.addEventListener('click', () => {
+      showAgreementYesCountdownScreen();
+    });
+
+    agreementNoNextBtn.addEventListener('click', () => {
+      showFinalCodeScreen();
+    });
+
+    prankNextBtn.addEventListener('click', () => {
+      showEarnedCodeScreen();
+    });
+
+    earnedCodeNextBtn.addEventListener('click', () => {
+      showFinalCodeScreen();
     });
 
     showNameScreen();
