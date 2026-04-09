@@ -97,24 +97,11 @@
       font-weight: 700;
     }
 
-    .row {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      align-items: center;
-    }
-
+    .row,
     .screen {
       display: flex;
       flex-direction: column;
       gap: 18px;
-      align-items: center;
-    }
-
-    .combo-screen {
-      display: flex;
-      flex-direction: column;
-      gap: 26px;
       align-items: center;
     }
 
@@ -201,27 +188,19 @@
       color: #d60000;
     }
 
-    .challenge-block {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      align-items: center;
-    }
-
     .image-grid {
       width: 100%;
       display: grid;
       grid-template-columns: repeat(3, minmax(120px, 1fr));
       gap: 18px;
       justify-items: center;
-      align-items: center;
+      align-items: start;
     }
 
     .choice-card {
       width: 100%;
       max-width: 180px;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.94);
       border: 3px solid #111;
       border-radius: 22px;
       padding: 10px;
@@ -241,10 +220,10 @@
 
     .choice-card img {
       width: 100%;
-      aspect-ratio: 1 / 1;
+      height: 160px;
       object-fit: cover;
-      border-radius: 14px;
       display: block;
+      border-radius: 14px;
       border: 2px solid #111;
       background: #fff;
     }
@@ -323,7 +302,7 @@
 
     <section id="resultSection" class="screen hidden">
       <div id="resultText" class="plain-text"></div>
-      <button class="primary-btn" id="resultNextBtn">Seuraava</button>
+      <button class="primary-btn" id="resultNextBtn">jatka</button>
     </section>
 
     <section id="iqSection" class="screen hidden">
@@ -349,47 +328,46 @@
       </div>
     </section>
 
-    <section id="challenge4IntroSection" class="combo-screen hidden">
-      <div id="challenge3SuccessText" class="plain-text">
-        Onnittelut, nyt taisi osua kohdalleen! Jatketaan!
+    <section id="challenge3SuccessSection" class="screen hidden">
+      <div class="plain-text">Onnittelut, nyt taisi osua kohdalleen! Jatketaan!</div>
+      <button class="primary-btn" id="challenge3NextBtn">jatka</button>
+    </section>
+
+    <section id="challenge4Section" class="screen hidden">
+      <div class="stage-text">
+        Aloitetaan helpolla! Kuka seuraavista on kunnioitettavin, hauskin ja paras tyyppi kaikista?
       </div>
 
-      <div class="challenge-block">
-        <div class="stage-text">
-          Aloitetaan helpolla! Kuka seuraavista on kunnioitettavin, hauskin ja paras tyyppi kaikista?
-        </div>
+      <div class="image-grid">
+        <button class="choice-card" data-correct="false" type="button">
+          <img src="./.Marq.png" alt="Marq" />
+          <div class="choice-name">Marq</div>
+        </button>
 
-        <div class="image-grid">
-          <button class="choice-card" data-correct="false">
-            <img src=".Marq.png" alt="Marq" />
-            <div class="choice-name">Marq</div>
-          </button>
+        <button class="choice-card" data-correct="false" type="button">
+          <img src="./.Santtu.png" alt="Santtu" />
+          <div class="choice-name">Santtu</div>
+        </button>
 
-          <button class="choice-card" data-correct="false">
-            <img src=".Santtu.png" alt="Santtu" />
-            <div class="choice-name">Santtu</div>
-          </button>
+        <button class="choice-card" data-correct="false" type="button">
+          <img src="./.Niko.png" alt="Niko" />
+          <div class="choice-name">Niko</div>
+        </button>
 
-          <button class="choice-card" data-correct="false">
-            <img src=".Niko.png" alt="Niko" />
-            <div class="choice-name">Niko</div>
-          </button>
+        <button class="choice-card" data-correct="false" type="button">
+          <img src="./.Jessetys.png" alt="Jessetys" />
+          <div class="choice-name">Jessetys</div>
+        </button>
 
-          <button class="choice-card" data-correct="false">
-            <img src=".Jessetys.png" alt="Jessetys" />
-            <div class="choice-name">Jessetys</div>
-          </button>
+        <button class="choice-card" data-correct="true" type="button">
+          <img src="./.Helmi.png" alt="Helmi" />
+          <div class="choice-name">Helmi</div>
+        </button>
 
-          <button class="choice-card" data-correct="true">
-            <img src=".Helmi.png" alt="Helmi" />
-            <div class="choice-name">Helmi</div>
-          </button>
-
-          <button class="choice-card" data-correct="false">
-            <img src=".Ella.png" alt="Ella" />
-            <div class="choice-name">Ella</div>
-          </button>
-        </div>
+        <button class="choice-card" data-correct="false" type="button">
+          <img src="./.Ella.png" alt="Ella" />
+          <div class="choice-name">Ella</div>
+        </button>
       </div>
     </section>
 
@@ -454,7 +432,8 @@
     const resultSection = document.getElementById('resultSection');
     const iqSection = document.getElementById('iqSection');
     const iqErrorSection = document.getElementById('iqErrorSection');
-    const challenge4IntroSection = document.getElementById('challenge4IntroSection');
+    const challenge3SuccessSection = document.getElementById('challenge3SuccessSection');
+    const challenge4Section = document.getElementById('challenge4Section');
     const challenge4WrongSection = document.getElementById('challenge4WrongSection');
     const challenge4CorrectSection = document.getElementById('challenge4CorrectSection');
 
@@ -470,6 +449,7 @@
     const iqSubmitBtn = document.getElementById('iqSubmitBtn');
     const retryIqBtn = document.getElementById('retryIqBtn');
 
+    const challenge3NextBtn = document.getElementById('challenge3NextBtn');
     const challenge4Choices = document.querySelectorAll('.choice-card');
 
     let continueClicks = 0;
@@ -480,7 +460,8 @@
       resultSection.classList.add('hidden');
       iqSection.classList.add('hidden');
       iqErrorSection.classList.add('hidden');
-      challenge4IntroSection.classList.add('hidden');
+      challenge3SuccessSection.classList.add('hidden');
+      challenge4Section.classList.add('hidden');
       challenge4WrongSection.classList.add('hidden');
       challenge4CorrectSection.classList.add('hidden');
     }
@@ -500,7 +481,6 @@
     function showContinueFlow(name) {
       hideAllSections();
       resetTexts();
-
       continueClicks = 0;
       stageText.textContent = `Tervetuloa ${name}! Jatketaanko?`;
       noBtn.classList.add('hidden');
@@ -510,7 +490,6 @@
     function showResultScreen(message) {
       hideAllSections();
       resetTexts();
-
       resultText.textContent = message;
       resultSection.classList.remove('hidden');
     }
@@ -518,7 +497,6 @@
     function showIqScreen() {
       hideAllSections();
       resetTexts();
-
       iqInput.value = '';
       iqSection.classList.remove('hidden');
       iqInput.focus();
@@ -527,28 +505,30 @@
     function showIqErrorScreen() {
       hideAllSections();
       resetTexts();
-
       iqErrorSection.classList.remove('hidden');
     }
 
-    function showChallenge4IntroScreen() {
+    function showChallenge3SuccessScreen() {
       hideAllSections();
       resetTexts();
+      challenge3SuccessSection.classList.remove('hidden');
+    }
 
-      challenge4IntroSection.classList.remove('hidden');
+    function showChallenge4Screen() {
+      hideAllSections();
+      resetTexts();
+      challenge4Section.classList.remove('hidden');
     }
 
     function showChallenge4WrongScreen() {
       hideAllSections();
       resetTexts();
-
       challenge4WrongSection.classList.remove('hidden');
     }
 
     function showChallenge4CorrectScreen() {
       hideAllSections();
       resetTexts();
-
       challenge4CorrectSection.classList.remove('hidden');
     }
 
@@ -607,7 +587,7 @@
       if (iqValue > 10) {
         showIqErrorScreen();
       } else {
-        showChallenge4IntroScreen();
+        showChallenge3SuccessScreen();
       }
     });
 
@@ -619,6 +599,10 @@
 
     retryIqBtn.addEventListener('click', () => {
       showIqScreen();
+    });
+
+    challenge3NextBtn.addEventListener('click', () => {
+      showChallenge4Screen();
     });
 
     challenge4Choices.forEach((choice) => {
