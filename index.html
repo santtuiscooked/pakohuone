@@ -20,6 +20,18 @@
       overflow: hidden;
     }
 
+    #dvdImage {
+      position: fixed;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      left: 20px;
+      top: 20px;
+    }
+
     .background-chaos {
       position: fixed;
       inset: 0;
@@ -64,6 +76,7 @@
       background-clip: text;
       color: transparent;
       animation: rainbowShift 1.2s linear infinite, bounce 1s infinite ease-in-out;
+      text-shadow: 0 0 0 rgba(0,0,0,0);
     }
 
     @keyframes rainbowShift {
@@ -76,18 +89,18 @@
       50% { transform: translateY(-6px) rotate(1deg); }
     }
 
+    .subtitle {
+      font-size: clamp(1rem, 2.6vw, 1.35rem);
+      margin: 0;
+      color: #222;
+      font-weight: 700;
+    }
+
     .row {
       display: flex;
       flex-direction: column;
       gap: 18px;
       align-items: center;
-    }
-
-    .subtitle {
-      margin: 0;
-      font-size: clamp(1rem, 2.6vw, 1.35rem);
-      color: #222;
-      font-weight: 700;
     }
 
     .name-input {
@@ -121,7 +134,7 @@
       font-size: 1.05rem;
       font-weight: 800;
       cursor: pointer;
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
       box-shadow: 5px 5px 0 #111;
     }
 
@@ -148,7 +161,7 @@
       display: none;
     }
 
-    .stage-text {
+    .welcome-box {
       margin-top: 20px;
       font-size: clamp(1.15rem, 2.8vw, 1.7rem);
       font-weight: 800;
@@ -163,11 +176,25 @@
       min-height: 2.6em;
     }
 
-    .plain-text {
+    .counter {
+      margin-top: 8px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #333;
+    }
+
+    .success {
       margin-top: 22px;
       font-size: clamp(1.1rem, 2.8vw, 1.45rem);
       font-weight: 900;
       color: #111;
+    }
+
+    .tiny-note {
+      margin-top: 14px;
+      color: #444;
+      font-size: 0.95rem;
+      font-weight: 700;
     }
 
     @media (max-width: 540px) {
@@ -187,38 +214,54 @@
   </style>
 </head>
 <body>
+  <img id="dvdImage" src="profiili.jpg" alt="profiili" />
   <div class="background-chaos"></div>
 
   <main class="card">
     <h1 class="title">TERVETULOA</h1>
-
     <section id="nameSection" class="row">
       <label for="playerName" class="subtitle">Mikä nimi??</label>
-      <input
-        id="playerName"
-        class="name-input"
-        type="text"
-        placeholder="Kirjoita nimesi tähän"
-        maxlength="30"
-        autocomplete="off"
-      />
+      <input id="playerName" class="name-input" type="text" placeholder="Kirjoita nimesi tähän" maxlength="30" />
       <button class="primary-btn" id="saveNameBtn">aloita</button>
     </section>
 
     <section id="continueSection" class="hidden">
-      <div id="stageText" class="stage-text"></div>
-
+      <div id="stageText" class="welcome-box"></div>
       <div class="btn-row">
         <button class="primary-btn" id="continueBtn">Jatka</button>
         <button class="secondary-btn hidden" id="noBtn">En</button>
       </div>
-
       <div id="redText" class="red-text"></div>
-      <div id="resultText" class="plain-text hidden"></div>
+      <div id="successBox" class="success hidden"></div>
     </section>
   </main>
 
   <script>
+    const dvdImage = document.getElementById('dvdImage');
+    let dvdX = 20;
+    let dvdY = 20;
+    let dvdDx = 2.5;
+    let dvdDy = 2.5;
+
+    function animateDvdImage() {
+      const imageWidth = dvdImage.offsetWidth;
+      const imageHeight = dvdImage.offsetHeight;
+      const maxX = window.innerWidth - imageWidth;
+      const maxY = window.innerHeight - imageHeight;
+
+      dvdX += dvdDx;
+      dvdY += dvdDy;
+
+      if (dvdX <= 0 || dvdX >= maxX) dvdDx *= -1;
+      if (dvdY <= 0 || dvdY >= maxY) dvdDy *= -1;
+
+      dvdImage.style.left = dvdX + 'px';
+      dvdImage.style.top = dvdY + 'px';
+
+      requestAnimationFrame(animateDvdImage);
+    }
+
+    animateDvdImage();
     const playerNameInput = document.getElementById('playerName');
     const saveNameBtn = document.getElementById('saveNameBtn');
     const nameSection = document.getElementById('nameSection');
@@ -227,34 +270,18 @@
     const continueBtn = document.getElementById('continueBtn');
     const noBtn = document.getElementById('noBtn');
     const redText = document.getElementById('redText');
-    const resultText = document.getElementById('resultText');
-
+    const successBox = document.getElementById('successBox');
     let continueClicks = 0;
-
-    function showContinueFlow(name) {
-      continueClicks = 0;
-      nameSection.classList.add('hidden');
-      continueSection.classList.remove('hidden');
-      stageText.textContent = `Tervetuloa ${name}! Jatketaanko?`;
+    ! Jatketaanko?`;
       redText.textContent = '';
-      resultText.textContent = '';
-      resultText.classList.add('hidden');
+      successBox.classList.add('hidden');
       continueBtn.classList.remove('hidden');
       noBtn.classList.add('hidden');
     }
 
-    function goForward(method) {
-      stageText.textContent = '';
-      redText.textContent = '';
-      continueBtn.classList.add('hidden');
-      noBtn.classList.add('hidden');
-      resultText.classList.remove('hidden');
-
-      if (method === 'no') {
-        resultText.textContent = 'ok, ei sitten😒 Seuraavan tehtävän teksti tulee tähän.';
-      } else {
-        resultText.textContent = 'good boy 😏';
-      }
+    if (savedName) {
+      playerNameInput.value = savedName;
+      showContinueFlow(savedName);
     }
 
     saveNameBtn.addEventListener('click', () => {
@@ -266,6 +293,7 @@
         return;
       }
 
+      
       showContinueFlow(name);
     });
 
@@ -274,6 +302,20 @@
         saveNameBtn.click();
       }
     });
+
+    function goForward(method) {
+      stageText.textContent = '';
+      redText.textContent = '';
+      continueBtn.classList.add('hidden');
+      noBtn.classList.add('hidden');
+      successBox.classList.remove('hidden');
+
+      if (method === 'no') {
+        successBox.textContent = 'ok, ei sitten😒 Seuraavan tehtävän teksti tulee tähän.';
+      } else {
+        successBox.textContent = 'good boy 😏';
+      }
+    }
 
     continueBtn.addEventListener('click', () => {
       continueClicks += 1;
@@ -292,9 +334,7 @@
       }
     });
 
-    noBtn.addEventListener('click', () => {
-      goForward('no');
-    });
+    noBtn.addEventListener('click', () => goForward('no'));
   </script>
 </body>
 </html>
