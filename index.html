@@ -210,8 +210,6 @@
 
   <main class="card">
     <h1 class="title">TERVETULOA</h1>
-    <p class="subtitle">Tämä sivu ottaa itsensä juuri sopivan vähän vakavasti.</p>
-
     <section id="nameSection" class="row">
       <label for="playerName" class="subtitle">Mikä on pelaajan nimi?</label>
       <input id="playerName" class="name-input" type="text" placeholder="Kirjoita nimesi tähän" maxlength="30" />
@@ -219,15 +217,13 @@
     </section>
 
     <section id="continueSection" class="hidden">
-      <div id="welcomeText" class="welcome-box"></div>
+      <div id="stageText" class="welcome-box"></div>
       <div class="btn-row">
         <button class="primary-btn" id="continueBtn">Jatka</button>
         <button class="secondary-btn hidden" id="noBtn">En</button>
       </div>
       <div id="redText" class="red-text"></div>
-      <div id="counterText" class="counter hidden"></div>
       <div id="successBox" class="success hidden"></div>
-      <div id="tinyNote" class="tiny-note hidden"></div>
     </section>
   </main>
 
@@ -236,21 +232,22 @@
     const saveNameBtn = document.getElementById('saveNameBtn');
     const nameSection = document.getElementById('nameSection');
     const continueSection = document.getElementById('continueSection');
-    const welcomeText = document.getElementById('welcomeText');
+    const stageText = document.getElementById('stageText');
     const continueBtn = document.getElementById('continueBtn');
     const noBtn = document.getElementById('noBtn');
     const redText = document.getElementById('redText');
-    const counterText = document.getElementById('counterText');
     const successBox = document.getElementById('successBox');
-    const tinyNote = document.getElementById('tinyNote');
-
     let continueClicks = 0;
     const savedName = localStorage.getItem('pakohuonePlayerName');
 
     function showContinueFlow(name) {
       nameSection.classList.add('hidden');
       continueSection.classList.remove('hidden');
-      welcomeText.textContent = `Tervetuloa ${name}! Jatketaanko?`;
+      stageText.textContent = `Tervetuloa ${name}! Jatketaanko?`;
+      redText.textContent = '';
+      successBox.classList.add('hidden');
+      continueBtn.classList.remove('hidden');
+      noBtn.classList.add('hidden');
     }
 
     if (savedName) {
@@ -277,20 +274,22 @@
       }
     });
 
-    function goForward() {
+    function goForward(method) {
+      stageText.textContent = '';
       redText.textContent = '';
-      counterText.classList.add('hidden');
       continueBtn.classList.add('hidden');
       noBtn.classList.add('hidden');
       successBox.classList.remove('hidden');
-      successBox.textContent = 'Loistava päätös. Painamalla "En" osoitit olevasi juuri oikeanlainen pelaaja. Seuraava osuus voidaan lisätä tähän seuraavaksi.';
-      tinyNote.classList.remove('hidden');
-      tinyNote.textContent = 'Tai vaihtoehtoisesti klikkasit jatka-nappia 100 kertaa, mikä on myös vaikuttavaa omistautumista.';
+
+      if (method === 'no') {
+        successBox.textContent = 'ok, ei sitten😒 Seuraavan tehtävän teksti tulee tähän.';
+      } else {
+        successBox.textContent = 'good boy 😏';
+      }
     }
 
     continueBtn.addEventListener('click', () => {
       continueClicks += 1;
-      noBtn.classList.remove('hidden');
 
       if (continueClicks === 1) {
         redText.textContent = 'Pahoittelut, varmistaisitko vielä jatketaanko?';
@@ -298,16 +297,15 @@
         redText.textContent = 'Oletko nyt AIVAN varma?';
       } else if (continueClicks >= 3 && continueClicks < 100) {
         redText.textContent = 'Painaisitko nappia vielä 100 kertaa varmistaaksesi, että haluat jatkaa?';
-        counterText.classList.remove('hidden');
-        counterText.textContent = `Jatka-nappia painettu: ${continueClicks} / 100`;
+        noBtn.classList.remove('hidden');
       }
 
       if (continueClicks >= 100) {
-        goForward();
+        goForward('100');
       }
     });
 
-    noBtn.addEventListener('click', goForward);
+    noBtn.addEventListener('click', () => goForward('no'));
   </script>
 </body>
 </html>
