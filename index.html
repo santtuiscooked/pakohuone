@@ -164,29 +164,11 @@
       min-height: 2.6em;
     }
 
-    .counter {
-      margin-top: 8px;
-      font-size: 1rem;
-      font-weight: 800;
-      color: #333;
-    }
-
     .success {
       margin-top: 22px;
-      padding: 18px;
-      border-radius: 18px;
-      border: 3px dashed #111;
-      background: #fff7cf;
       font-size: clamp(1.1rem, 2.8vw, 1.45rem);
       font-weight: 900;
       color: #111;
-    }
-
-    .tiny-note {
-      margin-top: 14px;
-      color: #444;
-      font-size: 0.95rem;
-      font-weight: 700;
     }
 
     @media (max-width: 540px) {
@@ -210,6 +192,7 @@
 
   <main class="card">
     <h1 class="title">TERVETULOA</h1>
+
     <section id="nameSection" class="row">
       <label for="playerName" class="subtitle">Mikä on pelaajan nimi?</label>
       <input id="playerName" class="name-input" type="text" placeholder="Kirjoita nimesi tähän" maxlength="30" />
@@ -218,10 +201,12 @@
 
     <section id="continueSection" class="hidden">
       <div id="stageText" class="welcome-box"></div>
+
       <div class="btn-row">
         <button class="primary-btn" id="continueBtn">Jatka</button>
         <button class="secondary-btn hidden" id="noBtn">En</button>
       </div>
+
       <div id="redText" class="red-text"></div>
       <div id="successBox" class="success hidden"></div>
     </section>
@@ -237,22 +222,19 @@
     const noBtn = document.getElementById('noBtn');
     const redText = document.getElementById('redText');
     const successBox = document.getElementById('successBox');
+
     let continueClicks = 0;
-    const savedName = localStorage.getItem('pakohuonePlayerName');
 
     function showContinueFlow(name) {
       nameSection.classList.add('hidden');
       continueSection.classList.remove('hidden');
       stageText.textContent = `Tervetuloa ${name}! Jatketaanko?`;
       redText.textContent = '';
+      successBox.textContent = '';
       successBox.classList.add('hidden');
       continueBtn.classList.remove('hidden');
       noBtn.classList.add('hidden');
-    }
-
-    if (savedName) {
-      playerNameInput.value = savedName;
-      showContinueFlow(savedName);
+      continueClicks = 0;
     }
 
     saveNameBtn.addEventListener('click', () => {
@@ -264,7 +246,6 @@
         return;
       }
 
-      localStorage.setItem('pakohuonePlayerName', name);
       showContinueFlow(name);
     });
 
