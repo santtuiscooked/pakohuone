@@ -1,30 +1,313 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-    <meta charset="UTF-8">
-    <title>Pakohuone</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pakohuone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffe44d;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+
+    .background-chaos {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.18;
+      background:
+        radial-gradient(circle at 10% 20%, #ff4fd8 0 40px, transparent 41px),
+        radial-gradient(circle at 90% 15%, #00d9ff 0 55px, transparent 56px),
+        radial-gradient(circle at 25% 85%, #7dff7d 0 70px, transparent 71px),
+        radial-gradient(circle at 80% 80%, #ff7a00 0 48px, transparent 49px),
+        radial-gradient(circle at 55% 40%, #9b5cff 0 65px, transparent 66px);
+      animation: floatBg 8s infinite alternate ease-in-out;
+    }
+
+    @keyframes floatBg {
+      from { transform: scale(1) rotate(0deg); }
+      to { transform: scale(1.08) rotate(2deg); }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      width: min(92vw, 760px);
+      background: rgba(255, 255, 255, 0.88);
+      border: 5px solid #111;
+      border-radius: 28px;
+      box-shadow: 12px 12px 0 #111;
+      padding: 34px 26px 30px;
+      text-align: center;
+    }
+
+    .title {
+      margin: 0 0 12px;
+      font-size: clamp(2.3rem, 7vw, 5rem);
+      line-height: 0.95;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #ff0080, #ff6a00, #ffee00, #1cff00, #00d9ff, #7b2cff, #ff0080);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: rainbowShift 1.2s linear infinite, bounce 1s infinite ease-in-out;
+      text-shadow: 0 0 0 rgba(0,0,0,0);
+    }
+
+    @keyframes rainbowShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-6px) rotate(1deg); }
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 2.6vw, 1.35rem);
+      margin: 0 0 24px;
+      color: #222;
+      font-weight: 700;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .name-input {
+      width: min(100%, 360px);
+      padding: 15px 18px;
+      border-radius: 16px;
+      border: 3px solid #111;
+      font-size: 1.1rem;
+      text-align: center;
+      outline: none;
+      background: #fff;
+    }
+
+    .name-input:focus {
+      transform: scale(1.02);
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 3px solid #111;
+      border-radius: 999px;
+      padding: 14px 24px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+      box-shadow: 5px 5px 0 #111;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 2px 2px 0 #111;
+    }
+
+    .primary-btn {
+      background: #00e676;
+      color: #111;
+    }
+
+    .secondary-btn {
+      background: #ff87b7;
+      color: #111;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .welcome-box {
+      margin-top: 20px;
+      font-size: clamp(1.15rem, 2.8vw, 1.7rem);
+      font-weight: 800;
+      color: #111;
+    }
+
+    .red-text {
+      margin-top: 16px;
+      color: #d60000;
+      font-size: clamp(1rem, 2.5vw, 1.35rem);
+      font-weight: 900;
+      min-height: 2.6em;
+    }
+
+    .counter {
+      margin-top: 8px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #333;
+    }
+
+    .success {
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 18px;
+      border: 3px dashed #111;
+      background: #fff7cf;
+      font-size: clamp(1.1rem, 2.8vw, 1.45rem);
+      font-weight: 900;
+      color: #111;
+    }
+
+    .tiny-note {
+      margin-top: 14px;
+      color: #444;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 540px) {
+      .card {
+        padding: 24px 16px 22px;
+        border-radius: 22px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .btn-row {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
-<body style="background-color:black; color:white; text-align:center; font-family:Arial;">
+<body>
+  <div class="background-chaos"></div>
 
-    <h1>🔐 Pakohuone</h1>
-    <p>Tervetuloa peliin...</p>
+  <main class="card">
+    <h1 class="title">TERVETULOA</h1>
+    <p class="subtitle">Tämä sivu ottaa itsensä juuri sopivan vähän vakavasti.</p>
 
-    <p>Anna salasana:</p>
-    <input type="text" id="password">
-    <button onclick="checkPassword()">Tarkista</button>
+    <section id="nameSection" class="row">
+      <label for="playerName" class="subtitle">Mikä on pelaajan nimi?</label>
+      <input id="playerName" class="name-input" type="text" placeholder="Kirjoita nimesi tähän" maxlength="30" />
+      <button class="primary-btn" id="saveNameBtn">Aloita tästä</button>
+    </section>
 
-    <p id="result"></p>
+    <section id="continueSection" class="hidden">
+      <div id="welcomeText" class="welcome-box"></div>
+      <div class="btn-row">
+        <button class="primary-btn" id="continueBtn">Jatka</button>
+        <button class="secondary-btn hidden" id="noBtn">En</button>
+      </div>
+      <div id="redText" class="red-text"></div>
+      <div id="counterText" class="counter hidden"></div>
+      <div id="successBox" class="success hidden"></div>
+      <div id="tinyNote" class="tiny-note hidden"></div>
+    </section>
+  </main>
 
-    <script>
-        function checkPassword() {
-            const input = document.getElementById("password").value;
-            if(input === "avain") {
-                document.getElementById("result").innerText = "✅ Oikein!";
-            } else {
-                document.getElementById("result").innerText = "❌ Väärin!";
-            }
-        }
-    </script>
+  <script>
+    const playerNameInput = document.getElementById('playerName');
+    const saveNameBtn = document.getElementById('saveNameBtn');
+    const nameSection = document.getElementById('nameSection');
+    const continueSection = document.getElementById('continueSection');
+    const welcomeText = document.getElementById('welcomeText');
+    const continueBtn = document.getElementById('continueBtn');
+    const noBtn = document.getElementById('noBtn');
+    const redText = document.getElementById('redText');
+    const counterText = document.getElementById('counterText');
+    const successBox = document.getElementById('successBox');
+    const tinyNote = document.getElementById('tinyNote');
 
+    let continueClicks = 0;
+    const savedName = localStorage.getItem('pakohuonePlayerName');
+
+    function showContinueFlow(name) {
+      nameSection.classList.add('hidden');
+      continueSection.classList.remove('hidden');
+      welcomeText.textContent = `Tervetuloa ${name}! Jatketaanko?`;
+    }
+
+    if (savedName) {
+      playerNameInput.value = savedName;
+      showContinueFlow(savedName);
+    }
+
+    saveNameBtn.addEventListener('click', () => {
+      const name = playerNameInput.value.trim();
+
+      if (!name) {
+        playerNameInput.focus();
+        playerNameInput.placeholder = 'Kirjoita ensin nimi 😎';
+        return;
+      }
+
+      localStorage.setItem('pakohuonePlayerName', name);
+      showContinueFlow(name);
+    });
+
+    playerNameInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        saveNameBtn.click();
+      }
+    });
+
+    function goForward() {
+      redText.textContent = '';
+      counterText.classList.add('hidden');
+      continueBtn.classList.add('hidden');
+      noBtn.classList.add('hidden');
+      successBox.classList.remove('hidden');
+      successBox.textContent = 'Loistava päätös. Painamalla "En" osoitit olevasi juuri oikeanlainen pelaaja. Seuraava osuus voidaan lisätä tähän seuraavaksi.';
+      tinyNote.classList.remove('hidden');
+      tinyNote.textContent = 'Tai vaihtoehtoisesti klikkasit jatka-nappia 100 kertaa, mikä on myös vaikuttavaa omistautumista.';
+    }
+
+    continueBtn.addEventListener('click', () => {
+      continueClicks += 1;
+      noBtn.classList.remove('hidden');
+
+      if (continueClicks === 1) {
+        redText.textContent = 'Pahoittelut, varmistaisitko vielä jatketaanko?';
+      } else if (continueClicks === 2) {
+        redText.textContent = 'Oletko nyt AIVAN varma?';
+      } else if (continueClicks >= 3 && continueClicks < 100) {
+        redText.textContent = 'Painaisitko nappia vielä 100 kertaa varmistaaksesi, että haluat jatkaa?';
+        counterText.classList.remove('hidden');
+        counterText.textContent = `Jatka-nappia painettu: ${continueClicks} / 100`;
+      }
+
+      if (continueClicks >= 100) {
+        goForward();
+      }
+    });
+
+    noBtn.addEventListener('click', goForward);
+  </script>
 </body>
 </html>
