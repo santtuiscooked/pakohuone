@@ -33,6 +33,28 @@
       top: 20px;
     }
 
+    #trollImage,
+    #funnyEmojiImage {
+      position: fixed;
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      left: 20px;
+      top: 20px;
+    }
+
+    #funnyEmojiImage {
+      animation: funnySpin 2.8s linear infinite;
+    }
+
+    @keyframes funnySpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
     .background-chaos {
       position: fixed;
       inset: 0;
@@ -278,6 +300,12 @@
         height: 90px;
       }
 
+      #trollImage,
+      #funnyEmojiImage {
+        width: 85px;
+        height: 85px;
+      }
+
       .image-grid {
         grid-template-columns: 1fr;
       }
@@ -290,6 +318,8 @@
 </head>
 <body>
   <img id="dvdImage" src="profiili.jpg" alt="profiili" />
+  <img id="trollImage" src="Trollface.png" alt="trollface" />
+  <img id="funnyEmojiImage" src="FunnyEmoji.png" alt="funny emoji" />
   <div class="background-chaos"></div>
 
   <main class="card">
@@ -547,47 +577,81 @@
 
   <script>
     const dvdImage = document.getElementById('dvdImage');
-    let dvdX = 20;
-    let dvdY = 20;
-    let dvdDx = 2.6;
-    let dvdDy = 2.2;
+    const trollImage = document.getElementById('trollImage');
+    const funnyEmojiImage = document.getElementById('funnyEmojiImage');
 
-    function animateDvdImage() {
-      const imageWidth = dvdImage.offsetWidth || 120;
-      const imageHeight = dvdImage.offsetHeight || 120;
-      const maxX = window.innerWidth - imageWidth;
-      const maxY = window.innerHeight - imageHeight;
-
-      dvdX += dvdDx;
-      dvdY += dvdDy;
-
-      if (dvdX <= 0) {
-        dvdX = 0;
-        dvdDx *= -1;
-      } else if (dvdX >= maxX) {
-        dvdX = maxX;
-        dvdDx *= -1;
+    const floatingImages = [
+      {
+        el: dvdImage,
+        x: 20,
+        y: 20,
+        dx: 2.6,
+        dy: 2.2
+      },
+      {
+        el: trollImage,
+        x: 220,
+        y: 120,
+        dx: -2.1,
+        dy: 2.8
+      },
+      {
+        el: funnyEmojiImage,
+        x: 420,
+        y: 260,
+        dx: 3.1,
+        dy: -2.4
       }
+    ];
 
-      if (dvdY <= 0) {
-        dvdY = 0;
-        dvdDy *= -1;
-      } else if (dvdY >= maxY) {
-        dvdY = maxY;
-        dvdDy *= -1;
-      }
+    function animateFloatingImages() {
+      floatingImages.forEach((item) => {
+        const imageWidth = item.el.offsetWidth || 110;
+        const imageHeight = item.el.offsetHeight || 110;
+        const maxX = window.innerWidth - imageWidth;
+        const maxY = window.innerHeight - imageHeight;
 
-      dvdImage.style.left = `${dvdX}px`;
-      dvdImage.style.top = `${dvdY}px`;
+        item.x += item.dx;
+        item.y += item.dy;
 
-      requestAnimationFrame(animateDvdImage);
+        if (item.x <= 0) {
+          item.x = 0;
+          item.dx *= -1;
+        } else if (item.x >= maxX) {
+          item.x = maxX;
+          item.dx *= -1;
+        }
+
+        if (item.y <= 0) {
+          item.y = 0;
+          item.dy *= -1;
+        } else if (item.y >= maxY) {
+          item.y = maxY;
+          item.dy *= -1;
+        }
+
+        item.el.style.left = `${item.x}px`;
+        item.el.style.top = `${item.y}px`;
+      });
+
+      requestAnimationFrame(animateFloatingImages);
     }
 
-    if (dvdImage.complete) {
-      animateDvdImage();
-    } else {
-      dvdImage.addEventListener('load', animateDvdImage, { once: true });
+    function startFloatingAnimationWhenReady() {
+      const allReady = floatingImages.every((item) => item.el.complete);
+
+      if (allReady) {
+        animateFloatingImages();
+      } else {
+        floatingImages.forEach((item) => {
+          if (!item.el.complete) {
+            item.el.addEventListener('load', startFloatingAnimationWhenReady, { once: true });
+          }
+        });
+      }
     }
+
+    startFloatingAnimationWhenReady();
 
     const playerNameInput = document.getElementById('playerName');
     const saveNameBtn = document.getElementById('saveNameBtn');
