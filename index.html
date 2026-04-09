@@ -104,6 +104,13 @@
       align-items: center;
     }
 
+    .screen {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+    }
+
     .name-input {
       width: min(100%, 360px);
       padding: 15px 18px;
@@ -125,7 +132,6 @@
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
-      margin-top: 18px;
     }
 
     button {
@@ -159,18 +165,18 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
 
     .stage-text {
-      margin-top: 0;
+      margin: 0;
       font-size: clamp(1.15rem, 2.8vw, 1.7rem);
       font-weight: 800;
       color: #111;
     }
 
     .red-text {
-      margin-top: 16px;
+      margin: 0;
       color: #d60000;
       font-size: clamp(1rem, 2.5vw, 1.35rem);
       font-weight: 900;
@@ -178,14 +184,10 @@
     }
 
     .plain-text {
-      margin-top: 22px;
+      margin: 0;
       font-size: clamp(1.1rem, 2.8vw, 1.45rem);
       font-weight: 900;
       color: #111;
-    }
-
-    .section-block {
-      margin-top: 26px;
     }
 
     @media (max-width: 540px) {
@@ -200,6 +202,7 @@
 
       .btn-row {
         flex-direction: column;
+        width: 100%;
       }
 
       #dvdImage {
@@ -229,46 +232,45 @@
       <button class="primary-btn" id="saveNameBtn">aloita</button>
     </section>
 
-    <section id="continueSection" class="hidden">
+    <section id="continueSection" class="screen hidden">
       <div id="stageText" class="stage-text"></div>
-
       <div class="btn-row">
         <button class="primary-btn" id="continueBtn">Jatka</button>
         <button class="secondary-btn hidden" id="noBtn">En</button>
       </div>
-
       <div id="redText" class="red-text"></div>
-      <div id="resultText" class="plain-text hidden"></div>
+    </section>
 
-      <!-- Tehtävä 3 -->
-      <div id="iqSection" class="section-block hidden">
-        <div class="stage-text">Mikä on älykkyysosamääräsi?</div>
-        <input
-          id="iqInput"
-          class="name-input"
-          type="number"
-          placeholder="Kirjoita luku tähän"
-          autocomplete="off"
-        />
-        <div class="btn-row">
-          <button class="primary-btn" id="iqSubmitBtn">Vastaa</button>
-        </div>
-      </div>
+    <section id="resultSection" class="screen hidden">
+      <div id="resultText" class="plain-text"></div>
+      <button class="primary-btn" id="resultNextBtn">Seuraava</button>
+    </section>
 
-      <!-- Virheruutu -->
-      <div id="iqErrorSection" class="section-block hidden">
-        <div class="stage-text">
-          laajan tekoälyskannauksen perusteella tämä ei ole valitettavasti mahdollista.
-        </div>
-        <div class="btn-row">
-          <button class="secondary-btn" id="retryIqBtn">yritä uudestaan</button>
-        </div>
+    <section id="iqSection" class="screen hidden">
+      <div class="stage-text">Mikä on älykkyysosamääräsi?</div>
+      <input
+        id="iqInput"
+        class="name-input"
+        type="number"
+        placeholder="Kirjoita luku tähän"
+        autocomplete="off"
+      />
+      <div class="btn-row">
+        <button class="primary-btn" id="iqSubmitBtn">Vastaa</button>
       </div>
+    </section>
 
-      <!-- Haaste 4 placeholder -->
-      <div id="challenge4Section" class="section-block hidden">
-        <div class="plain-text">Onnittelut, nyt taisi osua kohdalleen! Jatketaan!</div>
+    <section id="iqErrorSection" class="screen hidden">
+      <div class="stage-text">
+        laajan tekoälyskannauksen perusteella tämä ei ole valitettavasti mahdollista.
       </div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="retryIqBtn">yritä uudestaan</button>
+      </div>
+    </section>
+
+    <section id="challenge4Section" class="screen hidden">
+      <div class="plain-text">Onnittelut, nyt taisi osua kohdalleen! Jatketaan!</div>
     </section>
   </main>
 
@@ -318,79 +320,88 @@
 
     const playerNameInput = document.getElementById('playerName');
     const saveNameBtn = document.getElementById('saveNameBtn');
+
     const nameSection = document.getElementById('nameSection');
     const continueSection = document.getElementById('continueSection');
+    const resultSection = document.getElementById('resultSection');
+    const iqSection = document.getElementById('iqSection');
+    const iqErrorSection = document.getElementById('iqErrorSection');
+    const challenge4Section = document.getElementById('challenge4Section');
+
     const stageText = document.getElementById('stageText');
     const continueBtn = document.getElementById('continueBtn');
     const noBtn = document.getElementById('noBtn');
     const redText = document.getElementById('redText');
-    const resultText = document.getElementById('resultText');
 
-    const iqSection = document.getElementById('iqSection');
+    const resultText = document.getElementById('resultText');
+    const resultNextBtn = document.getElementById('resultNextBtn');
+
     const iqInput = document.getElementById('iqInput');
     const iqSubmitBtn = document.getElementById('iqSubmitBtn');
-    const iqErrorSection = document.getElementById('iqErrorSection');
     const retryIqBtn = document.getElementById('retryIqBtn');
-    const challenge4Section = document.getElementById('challenge4Section');
 
     let continueClicks = 0;
 
-    function resetTask3Views() {
+    function hideAllSections() {
+      nameSection.classList.add('hidden');
+      continueSection.classList.add('hidden');
+      resultSection.classList.add('hidden');
       iqSection.classList.add('hidden');
       iqErrorSection.classList.add('hidden');
       challenge4Section.classList.add('hidden');
+    }
+
+    function resetTexts() {
+      stageText.textContent = '';
+      redText.textContent = '';
+      resultText.textContent = '';
+    }
+
+    function showNameScreen() {
+      hideAllSections();
+      resetTexts();
+      nameSection.classList.remove('hidden');
     }
 
     function showContinueFlow(name) {
+      hideAllSections();
+      resetTexts();
+
       continueClicks = 0;
-      nameSection.classList.add('hidden');
-      continueSection.classList.remove('hidden');
-      stageText.style.display = 'block';
       stageText.textContent = `Tervetuloa ${name}! Jatketaanko?`;
-      redText.textContent = '';
-      resultText.textContent = '';
-      resultText.classList.add('hidden');
-      continueBtn.classList.remove('hidden');
       noBtn.classList.add('hidden');
-      resetTask3Views();
-      iqInput.value = '';
+      continueSection.classList.remove('hidden');
     }
 
-    function showIqQuestion() {
-      iqErrorSection.classList.add('hidden');
-      challenge4Section.classList.add('hidden');
-      iqSection.classList.remove('hidden');
+    function showResultScreen(message) {
+      hideAllSections();
+      resetTexts();
+
+      resultText.textContent = message;
+      resultSection.classList.remove('hidden');
+    }
+
+    function showIqScreen() {
+      hideAllSections();
+      resetTexts();
+
       iqInput.value = '';
+      iqSection.classList.remove('hidden');
       iqInput.focus();
     }
 
-    function showIqError() {
-      iqSection.classList.add('hidden');
-      challenge4Section.classList.add('hidden');
+    function showIqErrorScreen() {
+      hideAllSections();
+      resetTexts();
+
       iqErrorSection.classList.remove('hidden');
     }
 
-    function showChallenge4() {
-      iqSection.classList.add('hidden');
-      iqErrorSection.classList.add('hidden');
+    function showChallenge4Screen() {
+      hideAllSections();
+      resetTexts();
+
       challenge4Section.classList.remove('hidden');
-    }
-
-    function goForward(method) {
-      stageText.textContent = '';
-      stageText.style.display = 'none';
-      redText.textContent = '';
-      continueBtn.classList.add('hidden');
-      noBtn.classList.add('hidden');
-      resultText.classList.remove('hidden');
-
-      if (method === 'no') {
-        resultText.textContent = 'ok, ei sitten😒';
-      } else {
-        resultText.textContent = 'good boy 😏';
-      }
-
-      showIqQuestion();
     }
 
     saveNameBtn.addEventListener('click', () => {
@@ -424,26 +435,31 @@
       }
 
       if (continueClicks >= 100) {
-        goForward('100');
+        showResultScreen('good boy 😏');
       }
     });
 
     noBtn.addEventListener('click', () => {
-      goForward('no');
+      showResultScreen('ok, ei sitten😒');
+    });
+
+    resultNextBtn.addEventListener('click', () => {
+      showIqScreen();
     });
 
     iqSubmitBtn.addEventListener('click', () => {
-      const iqValue = Number(iqInput.value);
+      const rawValue = iqInput.value.trim();
+      const iqValue = Number(rawValue);
 
-      if (iqInput.value.trim() === '') {
+      if (!rawValue) {
         iqInput.focus();
         return;
       }
 
       if (iqValue > 10) {
-        showIqError();
+        showIqErrorScreen();
       } else {
-        showChallenge4();
+        showChallenge4Screen();
       }
     });
 
@@ -454,8 +470,10 @@
     });
 
     retryIqBtn.addEventListener('click', () => {
-      showIqQuestion();
+      showIqScreen();
     });
+
+    showNameScreen();
   </script>
 </body>
 </html>
