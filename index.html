@@ -18,6 +18,7 @@
       background: #ffe44d;
       font-family: Arial, Helvetica, sans-serif;
       overflow: hidden;
+      position: relative;
     }
 
     #dvdImage {
@@ -44,6 +45,7 @@
         radial-gradient(circle at 80% 80%, #ff7a00 0 48px, transparent 49px),
         radial-gradient(circle at 55% 40%, #9b5cff 0 65px, transparent 66px);
       animation: floatBg 8s infinite alternate ease-in-out;
+      z-index: 0;
     }
 
     @keyframes floatBg {
@@ -76,7 +78,6 @@
       background-clip: text;
       color: transparent;
       animation: rainbowShift 1.2s linear infinite, bounce 1s infinite ease-in-out;
-      text-shadow: 0 0 0 rgba(0,0,0,0);
     }
 
     @keyframes rainbowShift {
@@ -134,7 +135,7 @@
       font-size: 1.05rem;
       font-weight: 800;
       cursor: pointer;
-      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
       box-shadow: 5px 5px 0 #111;
     }
 
@@ -161,8 +162,8 @@
       display: none;
     }
 
-    .welcome-box {
-      margin-top: 20px;
+    .stage-text {
+      margin-top: 0;
       font-size: clamp(1.15rem, 2.8vw, 1.7rem);
       font-weight: 800;
       color: #111;
@@ -176,25 +177,11 @@
       min-height: 2.6em;
     }
 
-    .counter {
-      margin-top: 8px;
-      font-size: 1rem;
-      font-weight: 800;
-      color: #333;
-    }
-
-    .success {
+    .plain-text {
       margin-top: 22px;
       font-size: clamp(1.1rem, 2.8vw, 1.45rem);
       font-weight: 900;
       color: #111;
-    }
-
-    .tiny-note {
-      margin-top: 14px;
-      color: #444;
-      font-size: 0.95rem;
-      font-weight: 700;
     }
 
     @media (max-width: 540px) {
@@ -210,6 +197,11 @@
       .btn-row {
         flex-direction: column;
       }
+
+      #dvdImage {
+        width: 90px;
+        height: 90px;
+      }
     }
   </style>
 </head>
@@ -219,20 +211,30 @@
 
   <main class="card">
     <h1 class="title">TERVETULOA</h1>
+
     <section id="nameSection" class="row">
       <label for="playerName" class="subtitle">Mikä nimi??</label>
-      <input id="playerName" class="name-input" type="text" placeholder="Kirjoita nimesi tähän" maxlength="30" />
+      <input
+        id="playerName"
+        class="name-input"
+        type="text"
+        placeholder="Kirjoita nimesi tähän"
+        maxlength="30"
+        autocomplete="off"
+      />
       <button class="primary-btn" id="saveNameBtn">aloita</button>
     </section>
 
     <section id="continueSection" class="hidden">
-      <div id="stageText" class="welcome-box"></div>
+      <div id="stageText" class="stage-text"></div>
+
       <div class="btn-row">
         <button class="primary-btn" id="continueBtn">Jatka</button>
         <button class="secondary-btn hidden" id="noBtn">En</button>
       </div>
+
       <div id="redText" class="red-text"></div>
-      <div id="successBox" class="success hidden"></div>
+      <div id="resultText" class="plain-text hidden"></div>
     </section>
   </main>
 
@@ -240,28 +242,46 @@
     const dvdImage = document.getElementById('dvdImage');
     let dvdX = 20;
     let dvdY = 20;
-    let dvdDx = 2.5;
-    let dvdDy = 2.5;
+    let dvdDx = 2.6;
+    let dvdDy = 2.2;
 
     function animateDvdImage() {
-      const imageWidth = dvdImage.offsetWidth;
-      const imageHeight = dvdImage.offsetHeight;
+      const imageWidth = dvdImage.offsetWidth || 120;
+      const imageHeight = dvdImage.offsetHeight || 120;
       const maxX = window.innerWidth - imageWidth;
       const maxY = window.innerHeight - imageHeight;
 
       dvdX += dvdDx;
       dvdY += dvdDy;
 
-      if (dvdX <= 0 || dvdX >= maxX) dvdDx *= -1;
-      if (dvdY <= 0 || dvdY >= maxY) dvdDy *= -1;
+      if (dvdX <= 0) {
+        dvdX = 0;
+        dvdDx *= -1;
+      } else if (dvdX >= maxX) {
+        dvdX = maxX;
+        dvdDx *= -1;
+      }
 
-      dvdImage.style.left = dvdX + 'px';
-      dvdImage.style.top = dvdY + 'px';
+      if (dvdY <= 0) {
+        dvdY = 0;
+        dvdDy *= -1;
+      } else if (dvdY >= maxY) {
+        dvdY = maxY;
+        dvdDy *= -1;
+      }
+
+      dvdImage.style.left = `${dvdX}px`;
+      dvdImage.style.top = `${dvdY}px`;
 
       requestAnimationFrame(animateDvdImage);
     }
 
-    animateDvdImage();
+    if (dvdImage.complete) {
+      animateDvdImage();
+    } else {
+      dvdImage.addEventListener('load', animateDvdImage, { once: true });
+    }
+
     const playerNameInput = document.getElementById('playerName');
     const saveNameBtn = document.getElementById('saveNameBtn');
     const nameSection = document.getElementById('nameSection');
@@ -270,18 +290,36 @@
     const continueBtn = document.getElementById('continueBtn');
     const noBtn = document.getElementById('noBtn');
     const redText = document.getElementById('redText');
-    const successBox = document.getElementById('successBox');
+    const resultText = document.getElementById('resultText');
+
     let continueClicks = 0;
-    ! Jatketaanko?`;
+
+    function showContinueFlow(name) {
+      continueClicks = 0;
+      nameSection.classList.add('hidden');
+      continueSection.classList.remove('hidden');
+      stageText.style.display = 'block';
+      stageText.textContent = `Tervetuloa ${name}! Jatketaanko?`;
       redText.textContent = '';
-      successBox.classList.add('hidden');
+      resultText.textContent = '';
+      resultText.classList.add('hidden');
       continueBtn.classList.remove('hidden');
       noBtn.classList.add('hidden');
     }
 
-    if (savedName) {
-      playerNameInput.value = savedName;
-      showContinueFlow(savedName);
+    function goForward(method) {
+      stageText.textContent = '';
+      stageText.style.display = 'none';
+      redText.textContent = '';
+      continueBtn.classList.add('hidden');
+      noBtn.classList.add('hidden');
+      resultText.classList.remove('hidden');
+
+      if (method === 'no') {
+        resultText.textContent = 'ok, ei sitten😒 Seuraavan tehtävän teksti tulee tähän.';
+      } else {
+        resultText.textContent = 'good boy 😏';
+      }
     }
 
     saveNameBtn.addEventListener('click', () => {
@@ -293,7 +331,6 @@
         return;
       }
 
-      
       showContinueFlow(name);
     });
 
@@ -302,20 +339,6 @@
         saveNameBtn.click();
       }
     });
-
-    function goForward(method) {
-      stageText.textContent = '';
-      redText.textContent = '';
-      continueBtn.classList.add('hidden');
-      noBtn.classList.add('hidden');
-      successBox.classList.remove('hidden');
-
-      if (method === 'no') {
-        successBox.textContent = 'ok, ei sitten😒 Seuraavan tehtävän teksti tulee tähän.';
-      } else {
-        successBox.textContent = 'good boy 😏';
-      }
-    }
 
     continueBtn.addEventListener('click', () => {
       continueClicks += 1;
@@ -334,7 +357,9 @@
       }
     });
 
-    noBtn.addEventListener('click', () => goForward('no'));
+    noBtn.addEventListener('click', () => {
+      goForward('no');
+    });
   </script>
 </body>
 </html>
