@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <title>Pakohuone</title>
+</head>
+<body style="background-color:black; color:white; text-align:center; font-family:Arial;">
+
+    <h1>🔐 Pakohuone</h1>
+    <p>Tervetuloa peliin...</p>
+
+    <p>Anna salasana:</p>
+    <input type="text" id="password">
+    <button onclick="checkPassword()">Tarkista</button>
+
+    <p id="result"></p>
+
+    <script>
+        function checkPassword() {
+            const input = document.getElementById("password").value;
+            if(input === "avain") {
+                document.getElementById("result").innerText = "✅ Oikein!";
+            } else {
+                document.getElementById("result").innerText = "❌ Väärin!";
+            }
+        }
+    </script>
+
+</body>
+</html>
