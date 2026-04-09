@@ -399,10 +399,16 @@
 
     <section id="challenge5AlmostSection" class="screen hidden">
       <div class="plain-text">Hups! Unohdin mainita ettei musavideoita lasketa 😅</div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="retryChallenge5AlmostBtn">yritä uudelleen</button>
+      </div>
     </section>
 
     <section id="challenge5CorrectSection" class="screen hidden">
       <div class="plain-text">Wau! Se on oikea vastaus! Oletko valmis siirtymään eteenpäin?? 😄</div>
+      <div class="btn-row">
+        <button class="primary-btn" id="challenge5NextBtn">jatka</button>
+      </div>
     </section>
 
     <section id="challenge5WrongSection" class="screen hidden">
@@ -410,6 +416,46 @@
       <div class="btn-row">
         <button class="secondary-btn" id="retryChallenge5Btn">yritä uudelleen</button>
       </div>
+    </section>
+
+    <section id="extraChallengeIntroSection" class="screen hidden">
+      <div class="plain-text">Mutta hei... Olisi yksi pienin juttu....</div>
+      <div class="btn-row">
+        <button class="primary-btn" id="extraIntroNextBtn">jatka</button>
+      </div>
+    </section>
+
+    <section id="extraChallengeSection" class="screen hidden">
+      <div class="stage-text">Jäikö sinulta aiemmin jotain tekemättä kenties...?</div>
+      <div class="btn-row">
+        <button class="primary-btn" id="extraContinueBtn">Jatka</button>
+      </div>
+      <div id="extraRedText" class="red-text"></div>
+    </section>
+
+    <section id="challenge6Section" class="screen hidden">
+      <div class="stage-text">Tehdäänkö spaghetti polognesea? 🤤 Mikä esine ei kuulunut ruoan sekaan? 🤨</div>
+      <input
+        id="challenge6Input"
+        class="name-input"
+        type="text"
+        placeholder="Kirjoita vastaus tähän"
+        autocomplete="off"
+      />
+      <div class="btn-row">
+        <button class="primary-btn" id="challenge6SubmitBtn">jatkaa</button>
+      </div>
+    </section>
+
+    <section id="challenge6WrongSection" class="screen hidden">
+      <div id="challenge6WrongText" class="stage-text error-message"></div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="retryChallenge6Btn">yritä uudelleen</button>
+      </div>
+    </section>
+
+    <section id="challenge6CorrectSection" class="screen hidden">
+      <div class="plain-text">Mahtavaa! Et tarvitse avainta mihinkään! Tsekkaa pöydän alle!</div>
     </section>
   </main>
 
@@ -473,6 +519,11 @@
     const challenge5AlmostSection = document.getElementById('challenge5AlmostSection');
     const challenge5CorrectSection = document.getElementById('challenge5CorrectSection');
     const challenge5WrongSection = document.getElementById('challenge5WrongSection');
+    const extraChallengeIntroSection = document.getElementById('extraChallengeIntroSection');
+    const extraChallengeSection = document.getElementById('extraChallengeSection');
+    const challenge6Section = document.getElementById('challenge6Section');
+    const challenge6WrongSection = document.getElementById('challenge6WrongSection');
+    const challenge6CorrectSection = document.getElementById('challenge6CorrectSection');
 
     const stageText = document.getElementById('stageText');
     const continueBtn = document.getElementById('continueBtn');
@@ -495,8 +546,22 @@
     const challenge5Input = document.getElementById('challenge5Input');
     const challenge5SubmitBtn = document.getElementById('challenge5SubmitBtn');
     const retryChallenge5Btn = document.getElementById('retryChallenge5Btn');
+    const retryChallenge5AlmostBtn = document.getElementById('retryChallenge5AlmostBtn');
+    const challenge5NextBtn = document.getElementById('challenge5NextBtn');
+
+    const extraIntroNextBtn = document.getElementById('extraIntroNextBtn');
+    const extraContinueBtn = document.getElementById('extraContinueBtn');
+    const extraRedText = document.getElementById('extraRedText');
+
+    const challenge6Input = document.getElementById('challenge6Input');
+    const challenge6SubmitBtn = document.getElementById('challenge6SubmitBtn');
+    const challenge6WrongText = document.getElementById('challenge6WrongText');
+    const retryChallenge6Btn = document.getElementById('retryChallenge6Btn');
 
     let continueClicks = 0;
+    let usedNoPath = false;
+    let completedHundredClickChallenge = false;
+    let extraContinueClicks = 0;
 
     function hideAllSections() {
       nameSection.classList.add('hidden');
@@ -512,6 +577,11 @@
       challenge5AlmostSection.classList.add('hidden');
       challenge5CorrectSection.classList.add('hidden');
       challenge5WrongSection.classList.add('hidden');
+      extraChallengeIntroSection.classList.add('hidden');
+      extraChallengeSection.classList.add('hidden');
+      challenge6Section.classList.add('hidden');
+      challenge6WrongSection.classList.add('hidden');
+      challenge6CorrectSection.classList.add('hidden');
     }
 
     function resetTexts() {
@@ -519,6 +589,8 @@
       redText.textContent = '';
       resultText.textContent = '';
       challenge4WrongText.textContent = 'Valitettavasti ei osunut oikeaan... 😥';
+      extraRedText.textContent = '';
+      challenge6WrongText.textContent = '';
     }
 
     function showNameScreen() {
@@ -531,6 +603,7 @@
       hideAllSections();
       resetTexts();
       continueClicks = 0;
+      usedNoPath = false;
       stageText.textContent = `Tervetuloa ${name}! Jatketaanko?`;
       noBtn.classList.add('hidden');
       continueSection.classList.remove('hidden');
@@ -608,6 +681,54 @@
       challenge5WrongSection.classList.remove('hidden');
     }
 
+    function showExtraChallengeIntroScreen() {
+      hideAllSections();
+      resetTexts();
+      extraChallengeIntroSection.classList.remove('hidden');
+    }
+
+    function showExtraChallengeScreen() {
+      hideAllSections();
+      resetTexts();
+      extraChallengeSection.classList.remove('hidden');
+    }
+
+    function showChallenge6Screen() {
+      hideAllSections();
+      resetTexts();
+      challenge6Input.value = '';
+      challenge6Section.classList.remove('hidden');
+      challenge6Input.focus();
+    }
+
+    function showChallenge6WrongScreen(message) {
+      hideAllSections();
+      resetTexts();
+      challenge6WrongText.textContent = message;
+      challenge6WrongSection.classList.remove('hidden');
+    }
+
+    function showChallenge6CorrectScreen() {
+      hideAllSections();
+      resetTexts();
+      challenge6CorrectSection.classList.remove('hidden');
+    }
+
+    function goToChallenge6OrExtra() {
+      if (usedNoPath && !completedHundredClickChallenge) {
+        extraContinueClicks = 0;
+        showExtraChallengeIntroScreen();
+      } else {
+        showChallenge6Screen();
+      }
+    }
+
+    function formatAnswerForMessage(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return '';
+      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+    }
+
     saveNameBtn.addEventListener('click', () => {
       const name = playerNameInput.value.trim();
 
@@ -639,11 +760,14 @@
       }
 
       if (continueClicks >= 100) {
+        completedHundredClickChallenge = true;
+        usedNoPath = false;
         showResultScreen('good boy 😏');
       }
     });
 
     noBtn.addEventListener('click', () => {
+      usedNoPath = true;
       showResultScreen('ok, ei sitten😒');
     });
 
@@ -729,6 +853,58 @@
 
     retryChallenge5Btn.addEventListener('click', () => {
       showChallenge5Screen();
+    });
+
+    retryChallenge5AlmostBtn.addEventListener('click', () => {
+      showChallenge5Screen();
+    });
+
+    challenge5NextBtn.addEventListener('click', () => {
+      goToChallenge6OrExtra();
+    });
+
+    extraIntroNextBtn.addEventListener('click', () => {
+      showExtraChallengeScreen();
+    });
+
+    extraContinueBtn.addEventListener('click', () => {
+      extraContinueClicks += 1;
+
+      if (extraContinueClicks === 1) {
+        extraRedText.textContent = 'taisit olla tuhma aiemmin etkä painanut nappia 100 kertaa!! Olisiko aika? 🙁';
+      }
+
+      if (extraContinueClicks >= 100) {
+        completedHundredClickChallenge = true;
+        showChallenge6Screen();
+      }
+    });
+
+    challenge6SubmitBtn.addEventListener('click', () => {
+      const rawAnswer = challenge6Input.value.trim();
+      const normalizedAnswer = rawAnswer.toLowerCase();
+
+      if (!rawAnswer) {
+        challenge6Input.focus();
+        return;
+      }
+
+      if (normalizedAnswer === 'avain') {
+        showChallenge6CorrectScreen();
+      } else {
+        const formatted = formatAnswerForMessage(rawAnswer);
+        showChallenge6WrongScreen(`valitettavasti ruoan seasta EI löytynyt ${formatted}, yritä tutkia tarkemmin!`);
+      }
+    });
+
+    challenge6Input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        challenge6SubmitBtn.click();
+      }
+    });
+
+    retryChallenge6Btn.addEventListener('click', () => {
+      showChallenge6Screen();
     });
 
     showNameScreen();
