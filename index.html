@@ -56,7 +56,7 @@
     .card {
       position: relative;
       z-index: 1;
-      width: min(92vw, 760px);
+      width: min(92vw, 900px);
       background: rgba(255, 255, 255, 0.88);
       border: 5px solid #111;
       border-radius: 28px;
@@ -108,6 +108,13 @@
       display: flex;
       flex-direction: column;
       gap: 18px;
+      align-items: center;
+    }
+
+    .combo-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
       align-items: center;
     }
 
@@ -190,6 +197,71 @@
       color: #111;
     }
 
+    .error-message {
+      color: #d60000;
+    }
+
+    .challenge-block {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .image-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 18px;
+      justify-items: center;
+      align-items: center;
+    }
+
+    .choice-card {
+      width: 100%;
+      max-width: 180px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px solid #111;
+      border-radius: 22px;
+      padding: 10px;
+      box-shadow: 6px 6px 0 #111;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .choice-card:hover {
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    .choice-card:active {
+      transform: translateY(1px);
+      box-shadow: 2px 2px 0 #111;
+    }
+
+    .choice-card img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 14px;
+      display: block;
+      border: 2px solid #111;
+      background: #fff;
+    }
+
+    .choice-name {
+      margin-top: 10px;
+      font-weight: 900;
+      font-size: 1rem;
+      color: #111;
+    }
+
+    @media (max-width: 700px) {
+      .image-grid {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+    }
+
     @media (max-width: 540px) {
       .card {
         padding: 24px 16px 22px;
@@ -208,6 +280,14 @@
       #dvdImage {
         width: 90px;
         height: 90px;
+      }
+
+      .image-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .choice-card {
+        max-width: 220px;
       }
     }
   </style>
@@ -261,7 +341,7 @@
     </section>
 
     <section id="iqErrorSection" class="screen hidden">
-      <div class="stage-text">
+      <div class="stage-text error-message">
         laajan tekoälyskannauksen perusteella tämä ei ole valitettavasti mahdollista.
       </div>
       <div class="btn-row">
@@ -269,8 +349,56 @@
       </div>
     </section>
 
-    <section id="challenge4Section" class="screen hidden">
-      <div class="plain-text">Onnittelut, nyt taisi osua kohdalleen! Jatketaan!</div>
+    <section id="challenge4IntroSection" class="combo-screen hidden">
+      <div id="challenge3SuccessText" class="plain-text">
+        Onnittelut, nyt taisi osua kohdalleen! Jatketaan!
+      </div>
+
+      <div class="challenge-block">
+        <div class="stage-text">
+          Aloitetaan helpolla! Kuka seuraavista on kunnioitettavin, hauskin ja paras tyyppi kaikista?
+        </div>
+
+        <div class="image-grid">
+          <button class="choice-card" data-correct="false">
+            <img src=".Marq.png" alt="Marq" />
+            <div class="choice-name">Marq</div>
+          </button>
+
+          <button class="choice-card" data-correct="false">
+            <img src=".Santtu.png" alt="Santtu" />
+            <div class="choice-name">Santtu</div>
+          </button>
+
+          <button class="choice-card" data-correct="false">
+            <img src=".Niko.png" alt="Niko" />
+            <div class="choice-name">Niko</div>
+          </button>
+
+          <button class="choice-card" data-correct="false">
+            <img src=".Jessetys.png" alt="Jessetys" />
+            <div class="choice-name">Jessetys</div>
+          </button>
+
+          <button class="choice-card" data-correct="true">
+            <img src=".Helmi.png" alt="Helmi" />
+            <div class="choice-name">Helmi</div>
+          </button>
+
+          <button class="choice-card" data-correct="false">
+            <img src=".Ella.png" alt="Ella" />
+            <div class="choice-name">Ella</div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="challenge4WrongSection" class="screen hidden">
+      <div class="stage-text error-message">Valitettavasti ei osunut oikeaan... 😥</div>
+    </section>
+
+    <section id="challenge4CorrectSection" class="screen hidden">
+      <div class="plain-text">Lakiteknisistä syistä tämä oli valitettavasti oikea vastaus...</div>
     </section>
   </main>
 
@@ -326,7 +454,9 @@
     const resultSection = document.getElementById('resultSection');
     const iqSection = document.getElementById('iqSection');
     const iqErrorSection = document.getElementById('iqErrorSection');
-    const challenge4Section = document.getElementById('challenge4Section');
+    const challenge4IntroSection = document.getElementById('challenge4IntroSection');
+    const challenge4WrongSection = document.getElementById('challenge4WrongSection');
+    const challenge4CorrectSection = document.getElementById('challenge4CorrectSection');
 
     const stageText = document.getElementById('stageText');
     const continueBtn = document.getElementById('continueBtn');
@@ -340,6 +470,8 @@
     const iqSubmitBtn = document.getElementById('iqSubmitBtn');
     const retryIqBtn = document.getElementById('retryIqBtn');
 
+    const challenge4Choices = document.querySelectorAll('.choice-card');
+
     let continueClicks = 0;
 
     function hideAllSections() {
@@ -348,7 +480,9 @@
       resultSection.classList.add('hidden');
       iqSection.classList.add('hidden');
       iqErrorSection.classList.add('hidden');
-      challenge4Section.classList.add('hidden');
+      challenge4IntroSection.classList.add('hidden');
+      challenge4WrongSection.classList.add('hidden');
+      challenge4CorrectSection.classList.add('hidden');
     }
 
     function resetTexts() {
@@ -397,11 +531,25 @@
       iqErrorSection.classList.remove('hidden');
     }
 
-    function showChallenge4Screen() {
+    function showChallenge4IntroScreen() {
       hideAllSections();
       resetTexts();
 
-      challenge4Section.classList.remove('hidden');
+      challenge4IntroSection.classList.remove('hidden');
+    }
+
+    function showChallenge4WrongScreen() {
+      hideAllSections();
+      resetTexts();
+
+      challenge4WrongSection.classList.remove('hidden');
+    }
+
+    function showChallenge4CorrectScreen() {
+      hideAllSections();
+      resetTexts();
+
+      challenge4CorrectSection.classList.remove('hidden');
     }
 
     saveNameBtn.addEventListener('click', () => {
@@ -459,7 +607,7 @@
       if (iqValue > 10) {
         showIqErrorScreen();
       } else {
-        showChallenge4Screen();
+        showChallenge4IntroScreen();
       }
     });
 
@@ -471,6 +619,18 @@
 
     retryIqBtn.addEventListener('click', () => {
       showIqScreen();
+    });
+
+    challenge4Choices.forEach((choice) => {
+      choice.addEventListener('click', () => {
+        const isCorrect = choice.dataset.correct === 'true';
+
+        if (isCorrect) {
+          showChallenge4CorrectScreen();
+        } else {
+          showChallenge4WrongScreen();
+        }
+      });
     });
 
     showNameScreen();
